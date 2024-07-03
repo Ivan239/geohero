@@ -21,7 +21,7 @@ const Map = () => {
   // const clickInfo = useSelector((state) => state.app.clickInfo);
   const [radius, setRadius] = useState(100);
   const [limit, setLimit] = useState(100);
-  const [threshold, setThreshold] = useState(1);
+  const [threshold, setThreshold] = useState(0.9);
   const [showMap, setShowMap] = useState(true);
   const [showLayer, setShowLayer] = useState(true);
   const [searchLayer, setSearchLayer] = useState<GeoJsonLayer | undefined>(undefined);
@@ -63,8 +63,8 @@ const Map = () => {
         {
           cfg: {
             appCfgExtension: {
-              '41dd8bb794ad47b28f487caa3829b9da-scroll-scroll-1$41dd8bb794ad47b28f487caa3829b9da-scroll-scroll-1': `{"limit": 1, "collection_name": "greenvision_test", "filter": {"should": null, "must": [{"key": "location", "match": null, "range": null, "geo_bounding_box": null, "geo_radius": {"center": {"lon":${info.coordinate[0]},"lat":${info.coordinate[1]}}, "radius": ${radius}}, "geo_polygon": null, "values_count": null}], "must_not": null}}`,
-              '0930ea255d1d4ecbb3b1507c2eca3f11-search-search-1$0930ea255d1d4ecbb3b1507c2eca3f11-search-search-1': `{"limit": ${limit}, "collection_name": "greenvision_test", "score_threshold": ${threshold}}`,
+              '41dd8bb794ad47b28f487caa3829b9da-scroll-scroll-1$41dd8bb794ad47b28f487caa3829b9da-scroll-scroll-1': `{"limit": 1, "collection_name": "greenvision_military_bases_dakota", "filter": {"should": null, "must": [{"key": "location", "match": null, "range": null, "geo_bounding_box": null, "geo_radius": {"center": {"lon":${info.coordinate[0]},"lat":${info.coordinate[1]}}, "radius": ${radius}}, "geo_polygon": null, "values_count": null}], "must_not": null}}`,
+              '0930ea255d1d4ecbb3b1507c2eca3f11-search-search-1$0930ea255d1d4ecbb3b1507c2eca3f11-search-search-1': `{"limit": ${limit}, "collection_name": "greenvision_military_bases_dakota", "score_threshold": ${threshold}}`,
             },
           },
         },
