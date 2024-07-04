@@ -71,8 +71,8 @@ const Map = () => {
       .post(server, {
         cfg: {
           appCfgExtension: {
-            [first]: `{"limit": 1, "collection_name": ${name}, "filter": {"should": null, "must": [{"key": "location", "match": null, "range": null, "geo_bounding_box": null, "geo_radius": {"center": {"lon":${info.coordinate[0]},"lat":${info.coordinate[1]}}, "radius": ${radius}}, "geo_polygon": null, "values_count": null}], "must_not": null}}`,
-            [second]: `{"limit": ${limit}, "collection_name": ${name}, "score_threshold": ${threshold}, "timeout": 100}`,
+            [first]: `{"limit": 1, "collection_name": "${name}", "filter": {"should": null, "must": [{"key": "location", "match": null, "range": null, "geo_bounding_box": null, "geo_radius": {"center": {"lon":${info.coordinate[0]},"lat":${info.coordinate[1]}}, "radius": ${radius}}, "geo_polygon": null, "values_count": null}], "must_not": null}}`,
+            [second]: `{"limit": ${limit}, "collection_name": "${name}", "score_threshold": ${threshold}, "timeout": 100}`,
           },
         },
       })
