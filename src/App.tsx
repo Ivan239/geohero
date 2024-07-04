@@ -7,9 +7,9 @@ import React from 'react';
 import MapGl from 'react-map-gl';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import type { Feature, Geometry } from 'geojson';
-import mock from './mock.json';
+import mock from './mock2.json';
 import axios from 'axios';
-import search from './search.json';
+import { parse } from 'wkt';
 
 function App() {
   return <Map />;
@@ -25,6 +25,16 @@ const Map = () => {
   const [showMap, setShowMap] = useState(true);
   const [showLayer, setShowLayer] = useState(true);
   const [searchLayer, setSearchLayer] = useState<GeoJsonLayer | undefined>(undefined);
+  const [server, setServer] = useState(
+    'https://core.malevich.ai/api/v1/endpoints/run/4fe91c227b673b416fc3c3cae059410d850f1aa411a048cc14e2905758cb11ca',
+  );
+  const [name, setName] = useState('greenvision_military_bases_dakota');
+  const [first, setFirst] = useState(
+    'aff85793cb534fb99717ca30229a2225-scroll-scroll$aff85793cb534fb99717ca30229a2225-scroll-scroll',
+  );
+  const [second, setSecond] = useState(
+    'f90f6c69c80d4909a9f80c8d29eaf3e8-search-search$f90f6c69c80d4909a9f80c8d29eaf3e8-search-search',
+  );
 
   type PropertiesType = {
     name: string;
@@ -58,29 +68,36 @@ const Map = () => {
 
   const onLayerClick = (info): void => {
     axios
-      .post(
-        `https://core.malevich.ai/api/v1/endpoints/run/ccde9f883c573c84e6d973569e38c1f11ea1b3a0e945e95f8e4464ca504a25ac`,
-        {
-          cfg: {
-            appCfgExtension: {
-              '41dd8bb794ad47b28f487caa3829b9da-scroll-scroll-1$41dd8bb794ad47b28f487caa3829b9da-scroll-scroll-1': `{"limit": 1, "collection_name": "greenvision_military_bases_dakota", "filter": {"should": null, "must": [{"key": "location", "match": null, "range": null, "geo_bounding_box": null, "geo_radius": {"center": {"lon":${info.coordinate[0]},"lat":${info.coordinate[1]}}, "radius": ${radius}}, "geo_polygon": null, "values_count": null}], "must_not": null}}`,
-              '0930ea255d1d4ecbb3b1507c2eca3f11-search-search-1$0930ea255d1d4ecbb3b1507c2eca3f11-search-search-1': `{"limit": ${limit}, "collection_name": "greenvision_military_bases_dakota", "score_threshold": ${threshold}}`,
-            },
+      .post(server, {
+        cfg: {
+          appCfgExtension: {
+            [first]: `{"limit": 1, "collection_name": ${name}, "filter": {"should": null, "must": [{"key": "location", "match": null, "range": null, "geo_bounding_box": null, "geo_radius": {"center": {"lon":${info.coordinate[0]},"lat":${info.coordinate[1]}}, "radius": ${radius}}, "geo_polygon": null, "values_count": null}], "must_not": null}}`,
+            [second]: `{"limit": ${limit}, "collection_name": ${name}, "score_threshold": ${threshold}, "timeout": 100}`,
           },
         },
-      )
-      .then(() => {
-        /*
-        const resData = Object.values(res.data.results)?.[0]?.[0];
+      })
+      .then((res) => {
+        const resData = Object.values(res.data.results)?.[0]?.[0] || [];
+        console.log(res, resData);
 
-        const data = resData?.map((elem) => JSON.parse(elem?.payload || '{}'));
-        const scores = resData?.map((elem) => elem.score);
-*/
+        const newData = {
+          type: 'FeatureCollection',
+          name: 'search_greenvision_military_bases',
+          features: resData?.map((elem) => ({
+            geometry: parse(JSON.parse(elem.payload).geometry),
+            type: 'Feature',
+            properties: {
+              id: '00467443-5305-4e7a-bb38-6fa14042eef4',
+              score: elem.score,
+            },
+          })),
+        };
+
         setSearchLayer(
           new GeoJsonLayer({
             id: 'srch',
             // @ts-expect-error fddd
-            data: search,
+            data: newData,
 
             stroked: false,
             filled: true,
@@ -114,8 +131,8 @@ const Map = () => {
         id="covid"
         controller
         initialViewState={{
-          longitude: -115.0237089421788,
-          latitude: 36.23890558133199,
+          longitude: -101.5023345190481,
+          latitude: 48.40310747969382,
           zoom: 11,
         }}
         layers={[...(showLayer ? [geolayer] : []), searchLayer]}
@@ -128,6 +145,38 @@ const Map = () => {
         ) : null}
       </DeckGL>
       <div className="input_wrap">
+        <div className="input_text">Endpoint</div>
+        <input
+          type="string"
+          value={server}
+          onChange={(e) => setServer(e.target.value)}
+          className="input"
+          placeholder="Endpoint link"
+        />
+        <div className="input_text">Index</div>
+        <input
+          type="string"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="input"
+          placeholder="Index"
+        />
+        <div className="input_text">First config ID</div>
+        <input
+          type="string"
+          value={first}
+          onChange={(e) => setFirst(e.target.value)}
+          className="input"
+          placeholder="ID"
+        />
+        <div className="input_text">Second config ID</div>
+        <input
+          type="string"
+          value={second}
+          onChange={(e) => setSecond(e.target.value)}
+          className="input"
+          placeholder="ID"
+        />
         <div className="input_text">Limit</div>
         <input
           type="number"

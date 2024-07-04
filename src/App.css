@@ -36,7 +36,7 @@
   all: unset;
   box-sizing: border-box;
 
-  width: 160px;
+  width: 220px;
   height: 24px;
 
   background: rgba(18, 18, 18, 0.5);
